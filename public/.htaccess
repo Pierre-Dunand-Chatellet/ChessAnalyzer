@@ -1,0 +1,3 @@
+# Moteur Stockfish : le .wasm doit être servi avec son type MIME,
+# sinon le navigateur ne peut pas le compiler en flux (repli plus lent).
+AddType application/wasm .wasm
