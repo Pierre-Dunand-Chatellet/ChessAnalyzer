@@ -1,5 +1,7 @@
 # Analyse de partie d'échecs
 
+![Aperçu du projet](docs/apercu.jpg)
+
 Application web (SPA) qui analyse une partie d'échecs à partir de son PGN, entièrement dans le navigateur :
 pas de serveur, pas de compte, pas de base de données.
 
