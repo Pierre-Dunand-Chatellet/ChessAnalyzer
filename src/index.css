@@ -1,9 +1,59 @@
 @import "tailwindcss";
 
+/* Polices de la famille du portfolio, embarquées dans l'application : aucune requête vers un service
+   tiers, donc l'adresse IP du visiteur ne part nulle part (voir les mentions légales). */
+@font-face {
+  font-family: "Syne";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("./fonts/Syne-normal-400-800-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("./fonts/Geist-normal-400-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/JetBrainsMono-normal-400-latin.woff2") format("woff2");
+}
+
+/* Palette « Atelier », version nuit (encre) : la même que le portfolio et le Simulateur.
+   Le lilas est l'accent de la nuit du portfolio ; les couleurs des coups (brillant, bon, gaffe…)
+   gardent leurs teintes d'usage, elles veulent dire quelque chose. */
+@theme {
+  --color-papier: #100e0c;
+  --color-papier-2: #1a1714;
+  --color-papier-3: #26211c;
+  --color-papier-4: #332d27;
+  --color-encre: #ece5d8;
+  --color-encre-douce: #9a9184;
+  --color-encre-faible: #6f675c;
+  --color-filet: rgb(236 229 216 / 0.16);
+  --color-filet-fort: rgb(236 229 216 / 0.45);
+  --color-accent: #c08cff;
+  --color-accent-fort: #d3aaff;
+
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-display: "Syne", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
 :root {
   color-scheme: dark;
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
+  @apply bg-papier text-encre antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

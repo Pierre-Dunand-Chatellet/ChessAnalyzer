@@ -1,7 +1,5 @@
 # Analyse de partie d'échecs
 
-![Aperçu du projet](docs/apercu.jpg)
-
 Application web (SPA) qui analyse une partie d'échecs à partir de son PGN, entièrement dans le navigateur :
 pas de serveur, pas de compte, pas de base de données.
 
@@ -35,6 +33,8 @@ npm run build    # typecheck + build dans dist/
 | `src/useAnalysis.ts` | File d'analyse : position affichée d'abord, cache par FEN |
 | `src/AnalysisView.tsx` | Écrans de chargement, d'erreur et d'analyse |
 | `src/App.tsx` | Écran d'accueil (saisie du PGN) |
+| `src/Entete.tsx`, `src/Pied.tsx` | Barre du haut (monogramme → portfolio) et pied de page (retour, mentions légales, licence de Stockfish) |
+| `src/index.css` | Palette « nuit » du portfolio (tokens Tailwind `@theme`) et polices Syne, Geist, JetBrains Mono embarquées dans `src/fonts/` |
 
 ## Déploiement
 
