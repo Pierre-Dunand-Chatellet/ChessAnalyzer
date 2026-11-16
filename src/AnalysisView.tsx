@@ -4,18 +4,19 @@ import { Chessboard } from 'react-chessboard'
 import { formatScore, labelFor, moveAccuracy, tryMove, uciToSan, whitePercent, type Game, type Label, type PositionEval } from './analysis.ts'
 import { useAnalysis } from './useAnalysis.ts'
 
+// Les symboles d'annotation des livres d'échecs, écrits à l'encre : bleu pour les bons coups, rouge pour les fautes.
 const LABELS: Record<Label, { sym: string; cls: string }> = {
-  Brillant: { sym: '!!', cls: 'bg-cyan-400 text-papier' },
-  Bon: { sym: '✓', cls: 'bg-emerald-500 text-papier' },
-  Imprécision: { sym: '?!', cls: 'bg-yellow-400 text-papier' },
-  Erreur: { sym: '?', cls: 'bg-orange-500 text-papier' },
-  Gaffe: { sym: '??', cls: 'bg-red-500 text-white' },
+  Brillant: { sym: '!!', cls: 'text-accent' },
+  Bon: { sym: '!', cls: 'text-accent' },
+  Imprécision: { sym: '?!', cls: 'text-[#9a5b00]' },
+  Erreur: { sym: '?', cls: 'text-rouge' },
+  Gaffe: { sym: '??', cls: 'text-rouge' },
 }
 const LABEL_ORDER = Object.keys(LABELS) as Label[]
 
 function Badge({ label }: { label: Label }) {
   return (
-    <span title={label} className={`inline-grid h-5 min-w-5 place-items-center rounded px-1 text-[11px] font-bold ${LABELS[label].cls}`}>
+    <span title={label} className={`inline-grid h-5 min-w-5 place-items-center px-0.5 font-sans text-[15px] font-black ${LABELS[label].cls}`}>
       <span aria-hidden="true">{LABELS[label].sym}</span>
       <span className="sr-only">{label}</span>
     </span>
@@ -34,13 +35,13 @@ function EvalBar({ score, flipped }: { score: number | undefined; flipped: boole
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
       aria-valuetext={text}
-      className={`relative flex w-6 shrink-0 overflow-hidden rounded-sm bg-papier-3 sm:w-8 ${flipped ? 'flex-col' : 'flex-col-reverse'}`}
+      className={`relative flex w-6 shrink-0 overflow-hidden border-2 border-encre bg-encre sm:w-8 ${flipped ? 'flex-col' : 'flex-col-reverse'}`}
     >
-      <div className="bg-encre transition-[height] duration-500 ease-out" style={{ height: `${pct}%` }} />
+      <div className="bg-papier-2 transition-[height] duration-500 ease-out" style={{ height: `${pct}%` }} />
       <span
         className={`absolute inset-x-0 text-center text-[11px] font-semibold sm:text-xs ${
           whiteAhead !== flipped ? 'bottom-1' : 'top-1'
-        } ${whiteAhead ? 'text-papier' : 'text-encre'}`}
+        } ${whiteAhead ? 'text-encre' : 'text-white'}`}
       >
         {text}
       </span>
@@ -65,7 +66,7 @@ function Summary({ game, evals, labels }: { game: Game; evals: (PositionEval | u
     <table className="w-full text-sm">
       <caption className="sr-only">Résumé par joueur</caption>
       <thead>
-        <tr className="font-mono text-[11px] uppercase tracking-[0.1em] text-encre-douce">
+        <tr className="text-xs text-encre-douce">
           <th scope="col" className="pb-1 text-left font-normal">Joueur</th>
           <th scope="col" className="pb-1 font-normal">Précision</th>
           {LABEL_ORDER.map((l) => (
@@ -93,6 +94,23 @@ function Summary({ game, evals, labels }: { game: Game; evals: (PositionEval | u
       </tbody>
     </table>
   )
+}
+
+
+// Icônes de navigation dessinées (trait de 2 px), à la place des caractères Unicode.
+function Icone({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={d} />
+    </svg>
+  )
+}
+const ICO = {
+  debut: 'M6 5v14M18 6l-7 6 7 6',
+  prec: 'M15 6l-6 6 6 6',
+  suiv: 'M9 6l6 6-6 6',
+  fin: 'M18 5v14M6 6l7 6-7 6',
+  retourner: 'M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3',
 }
 
 const moveNo = (m: Move) => `${m.before.split(' ')[5]}${m.color === 'w' ? '.' : '...'}`
@@ -173,8 +191,8 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
     return (
       <main className="grid min-h-[calc(100dvh-3.5rem)] place-items-center p-4">
         <div className="max-w-md space-y-4 text-center">
-          <p className="text-red-400">{error}</p>
-          <button onClick={onBack} className="rounded-full border border-filet-fort px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] hover:bg-encre hover:text-papier">
+          <p className="text-rouge">{error}</p>
+          <button onClick={onBack} className="rounded-md border-2 border-encre bg-papier-2 px-5 py-3 text-[0.9375rem] font-semibold hover:bg-encre hover:text-white">
             Retour
           </button>
         </div>
@@ -190,10 +208,10 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
   const analyzed = evals.filter(Boolean).length
 
   const highlight = shownMove
-    ? { [shownMove.from]: { background: 'rgba(250, 204, 21, .35)' }, [shownMove.to]: { background: 'rgba(250, 204, 21, .45)' } }
+    ? { [shownMove.from]: { background: 'rgba(43, 58, 143, .18)' }, [shownMove.to]: { background: 'rgba(43, 58, 143, .3)' } }
     : {}
   const arrows = current?.best
-    ? [{ startSquare: current.best.slice(0, 2), endSquare: current.best.slice(2, 4), color: 'rgba(16, 185, 129, .8)' }]
+    ? [{ startSquare: current.best.slice(0, 2), endSquare: current.best.slice(2, 4), color: 'rgba(43, 58, 143, .85)' }]
     : []
 
   // Lignes de l'historique : la partie peut commencer par un coup noir (PGN avec [FEN]).
@@ -203,21 +221,21 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
   const h = game.headers
 
   const navBtn =
-    'rounded-full border border-filet-fort py-2 text-lg transition-colors hover:bg-encre hover:text-papier disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-encre'
+    'grid place-items-center rounded-md border-2 border-encre bg-papier-2 py-2 transition-colors hover:bg-encre hover:text-white active:scale-[0.97] disabled:opacity-40 disabled:hover:bg-papier-2 disabled:hover:text-encre'
 
   return (
     <main className="mx-auto max-w-6xl p-4">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="truncate font-display text-lg font-bold">
+          <h1 className="truncate text-2xl font-extrabold tracking-tight">
             {h.White ?? 'Blancs'} {h.WhiteElo && <span className="text-encre-douce">({h.WhiteElo})</span>} –{' '}
             {h.Black ?? 'Noirs'} {h.BlackElo && <span className="text-encre-douce">({h.BlackElo})</span>}
           </h1>
-          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-encre-douce">
-            {[h.Event, h.Date, h.Result].filter((x) => x && x !== '?' && !x.startsWith('????')).join(' · ')}
+          <p className="text-sm text-encre-douce">
+            {[h.Event, h.Date, h.Result].filter((x) => x && x !== '?' && !x.startsWith('????')).join(', ')}
           </p>
         </div>
-        <button onClick={onBack} className="rounded-full border border-filet-fort px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors hover:bg-encre hover:text-papier">
+        <button onClick={onBack} className="rounded-md border-2 border-encre bg-papier-2 px-4 py-2.5 text-[0.9375rem] font-semibold transition-colors hover:bg-encre hover:text-white">
           Nouvelle partie
         </button>
       </header>
@@ -236,8 +254,8 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
                 arrows,
                 squareStyles: highlight,
                 animationDurationInMs: 150,
-                lightSquareStyle: { backgroundColor: '#e7e2d7' },
-                darkSquareStyle: { backgroundColor: '#8a7a99' },
+                lightSquareStyle: { backgroundColor: '#f4f6f8' },
+                darkSquareStyle: { backgroundColor: '#9aa6b8' },
                 boardStyle: { borderRadius: '2px' },
               }}
             />
@@ -246,7 +264,7 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
 
         {/* Analyse et contrôles */}
         <section className="flex min-h-0 flex-col gap-4 lg:max-h-[calc(100dvh-10.5rem)]">
-          <div className="space-y-2 rounded-sm border border-filet bg-papier-2 p-4" aria-live="polite">
+          <div className="space-y-2 rounded-md border-2 border-encre bg-papier-2 p-4" aria-live="polite">
             {shownMove ? (
               <>
                 <div className="flex items-center gap-2">
@@ -271,7 +289,7 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
               Évaluation : <b className="text-encre">{current ? formatScore(current.score) : '…'}</b>
               {current?.best && (
                 <>
-                  <span className="mx-2 text-encre-faible">·</span>
+                  <span className="mx-2 text-encre-faible">|</span>
                   Suggestion ici : <b className="text-accent">{uciToSan(shownFen, current.best)}</b>
                 </>
               )}
@@ -279,11 +297,11 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
           </div>
 
           {line.length > 0 && (
-            <div className="rounded-sm border border-sky-500/30 bg-sky-500/5 p-3 text-sm">
+            <div className="rounded-md border-2 border-sky-700/40 bg-sky-50 p-3 text-sm">
               <div className="mb-1 flex items-center justify-between gap-2">
-                <span className="font-semibold text-sky-300">Variante</span>
+                <span className="font-semibold text-sky-800">Variante</span>
                 <button onClick={() => setLine([])} className="rounded px-2 py-1 text-xs text-encre-douce hover:bg-papier-3 hover:text-encre">
-                  Revenir à la partie ✕
+                  Revenir à la partie
                 </button>
               </div>
               <p className="flex flex-wrap gap-x-1">
@@ -293,7 +311,7 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
                     key={i}
                     onClick={() => setLine(line.slice(0, i + 1))}
                     aria-current={i === line.length - 1 ? 'step' : undefined}
-                    className={`rounded px-1 py-0.5 ${i === line.length - 1 ? 'bg-sky-500/20 text-sky-200' : 'hover:bg-papier-3'}`}
+                    className={`rounded px-1 py-0.5 ${i === line.length - 1 ? 'bg-sky-100 text-sky-900' : 'hover:bg-papier-3'}`}
                   >
                     {m.color === 'w' || i === 0 ? `${moveNo(m)} ` : ''}
                     {m.san}
@@ -304,34 +322,40 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
           )}
 
           <div className="grid grid-cols-5 gap-2">
-            <button className={navBtn} onClick={() => go(0)} disabled={ply === 0 && !line.length} aria-label="Début">⏮</button>
-            <button className={navBtn} onClick={back} disabled={ply === 0 && !line.length} aria-label="Coup précédent">◀</button>
-            <button className={navBtn} onClick={forward} disabled={ply === last || line.length > 0} aria-label="Coup suivant">▶</button>
-            <button className={navBtn} onClick={() => go(last)} disabled={ply === last && !line.length} aria-label="Fin">⏭</button>
-            <button className={navBtn} onClick={() => setFlipped((f) => !f)} aria-label="Retourner l'échiquier">⇅</button>
+            <button className={navBtn} onClick={() => go(0)} disabled={ply === 0 && !line.length} aria-label="Début"><Icone d={ICO.debut} /></button>
+            <button className={navBtn} onClick={back} disabled={ply === 0 && !line.length} aria-label="Coup précédent"><Icone d={ICO.prec} /></button>
+            <button className={navBtn} onClick={forward} disabled={ply === last || line.length > 0} aria-label="Coup suivant"><Icone d={ICO.suiv} /></button>
+            <button className={navBtn} onClick={() => go(last)} disabled={ply === last && !line.length} aria-label="Fin"><Icone d={ICO.fin} /></button>
+            <button className={navBtn} onClick={() => setFlipped((f) => !f)} aria-label="Retourner l'échiquier"><Icone d={ICO.retourner} /></button>
           </div>
 
           {/* relative : sert de référence aux offsetTop des coups */}
-          <div ref={listRef} className="relative min-h-48 flex-1 overflow-y-auto rounded-sm border border-filet bg-papier-2 p-2">
+          <div ref={listRef} className="relative min-h-48 flex-1 overflow-y-auto rounded-md border-2 border-encre bg-papier-2 px-3 pb-2">
+            {/* La feuille de notation : en-tête Blancs / Noirs, lignes réglées, coups au stylo bleu. */}
+            <div aria-hidden="true" className="sticky top-0 grid grid-cols-[2.5rem_1fr_1fr] gap-x-1 border-b-2 border-encre bg-papier-2 pb-1.5 pt-2.5 text-xs font-semibold text-encre-douce">
+              <span />
+              <span className="px-2">Blancs</span>
+              <span className="px-2">Noirs</span>
+            </div>
             <ol className="grid grid-cols-[2.5rem_1fr_1fr] gap-x-1 text-sm">
               {rows.map((row, r) => (
                 <li key={r} className="contents">
-                  <span className="py-1 pr-1 text-right text-encre-douce">{moveNo(game.moves[(row[0] ?? row[1])!]).replace(/\.+$/, '.')}</span>
+                  <span className="border-b border-ligne py-1.5 pr-1 text-right text-encre-douce">{moveNo(game.moves[(row[0] ?? row[1])!]).replace(/\.+$/, '.')}</span>
                   {row.map((i, c) =>
                     i === null ? (
-                      <span key={c} className="px-2 py-1 text-encre-faible">…</span>
+                      <span key={c} className="border-b border-ligne px-2 py-1 text-encre-faible">…</span>
                     ) : (
                       <button
                         key={c}
                         ref={ply === i + 1 ? activeRef : undefined}
                         onClick={() => go(i + 1)}
                         aria-current={ply === i + 1 && !line.length ? 'step' : undefined}
-                        className={`flex items-center justify-between gap-1 rounded px-2 py-1 text-left ${
-                          ply === i + 1 ? (line.length ? 'ring-1 ring-sky-500/50' : 'bg-accent/20 text-accent') : 'hover:bg-papier-3'
-                        }`}
+                        className={`flex items-center justify-between gap-1 border-b border-ligne px-2 py-0.5 text-left font-plume text-[1.6rem] leading-tight ${
+                          labels[i] === 'Gaffe' || labels[i] === 'Erreur' ? 'text-rouge' : 'text-accent'
+                        } ${ply === i + 1 ? (line.length ? 'bg-sky-100' : 'bg-[#e3e8ff]') : 'hover:bg-papier-3'}`}
                       >
                         <span>{game.moves[i].san}</span>
-                        {labels[i] ? <Badge label={labels[i]} /> : <span className="text-xs text-encre-faible">·</span>}
+                        {labels[i] && labels[i] !== 'Bon' ? <Badge label={labels[i]} /> : null}
                       </button>
                     ),
                   )}
@@ -340,14 +364,14 @@ export default function AnalysisView({ game, onBack }: { game: Game; onBack: () 
             </ol>
           </div>
 
-          <div className="rounded-sm border border-filet bg-papier-2 p-3">
+          <div className="rounded-md border-2 border-encre bg-papier-2 p-3">
             <Summary game={game} evals={evals} labels={labels} />
           </div>
 
           <p className="text-xs text-encre-douce">
             {analyzed < game.fens.length
               ? `Analyse Stockfish : ${analyzed}/${game.fens.length} positions (profondeur 14)`
-              : `Analyse terminée · ← → pour naviguer · glissez une pièce pour explorer une variante`}
+              : `Analyse terminée. Flèches du clavier pour naviguer, glissez une pièce pour explorer une variante.`}
           </p>
         </section>
       </div>
